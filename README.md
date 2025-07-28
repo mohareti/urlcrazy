@@ -13,7 +13,7 @@ Homepage: https://github.com/urbanadventurer/urlcrazy
 * Conduct phishing attacks during a penetration test
 
 ## ⭐ Features
-* Generates 15 types of domain variants
+* Generates 17 types of domain variants
 * Knows over 8000 common misspellings
 * Over 1500 Top Level Domains supported
 * Bit-flipping attacks

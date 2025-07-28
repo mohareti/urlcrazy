@@ -20,6 +20,10 @@ class Domainname
   end
   
   def create_typos
+    # Save the original domain for comparison
+    original_domain = @domain
+    
+    # Add original domain first
     self.original.sort.uniq.each { |c|
         t = Typo.new
         t.type = "Original"
@@ -28,57 +32,40 @@ class Domainname
         @typos << t
     }
 
-    self.character_omission.sort.uniq.each { |c|
+    # Helper method to add typos only if they don't match the original domain
+    def add_typo(typo_type, domain)
+      if domain != @domain
         t = Typo.new
-        t.type = "Character Omission"
-        t.name = c
-        t.valid_name = TLD.valid_domain?(c)
+        t.type = typo_type
+        t.name = domain
+        t.valid_name = TLD.valid_domain?(domain)
         @typos << t
+      end
+    end
+
+    self.character_omission.sort.uniq.each { |c|
+        add_typo("Character Omission", c)
     }
 
     self.character_repeat.sort.uniq.each { |c|
-        t = Typo.new
-        t.type = "Character Repeat"
-        t.name = c
-        t.valid_name = TLD.valid_domain?(c)
-        @typos << t
+        add_typo("Character Repeat", c)
     }
     
     self.character_swap.sort.uniq.each { |c|
-        t = Typo.new
-        t.type = "Character Swap"
-        t.name = c
-        t.valid_name = TLD.valid_domain?(c)
-        @typos << t
+        add_typo("Character Swap", c)
     }
     self.character_replacement.sort.uniq.each { |c|
-        t = Typo.new
-        t.type = "Character Replacement"
-        t.name = c
-        t.valid_name = TLD.valid_domain?(c)
-        @typos << t
+        add_typo("Character Replacement", c)
     }
     self.double_character_replacement.sort.uniq.each { |c|
-        t = Typo.new
-        t.type = "Double Replacement"
-        t.name = c
-        t.valid_name = TLD.valid_domain?(c)
-        @typos << t
+        add_typo("Double Replacement", c)
     }
     self.character_insertion.sort.uniq.each { |c|
-        t = Typo.new
-        t.type = "Character Insertion"
-        t.name = c
-        t.valid_name = TLD.valid_domain?(c)
-        @typos << t
+        add_typo("Character Insertion", c)
     }
 
     self.missingdot.sort.uniq.each { |c|
-        t=Typo.new
-        t.type = "Missing Dot"
-        t.name = c
-        t.valid_name = TLD.valid_domain?(c)
-        @typos << t
+        add_typo("Missing Dot", c)
     }
 =begin
     self.insert_dot.sort.uniq.each { |c|
@@ -90,107 +77,55 @@ class Domainname
     }
 =end
     self.insert_dash.sort.uniq.each { |c|
-        t=Typo.new
-        t.type = "Insert Dash"
-        t.name = c
-        t.valid_name = TLD.valid_domain?(c)
-        @typos << t
+        add_typo("Insert Dash", c)
     }
 
     self.stripdashes.sort.uniq.each { |c|
-        t = Typo.new
-        t.type = "Strip Dashes"
-        t.name = c
-        t.valid_name = TLD.valid_domain?(c)
-        @typos << t
+        add_typo("Strip Dashes", c)
     }
 
     self.singular_or_pluralise.sort.uniq.each { |c|
-        t = Typo.new
-        t.type = "Singular or Pluralise"
-        t.name = c
-        t.valid_name = TLD.valid_domain?(c)
-        @typos << t
+        add_typo("Singular or Pluralise", c)
     } 
 
     self.common_misspellings.sort.uniq.each { |c|
-        t = Typo.new
-        t.type = "Common Misspelling"
-        t.name = c
-        t.valid_name = TLD.valid_domain?(c)
-        @typos << t
+        add_typo("Common Misspelling", c)
     } 
 
     self.vowel_swap.sort.uniq.each { |c|
-        t = Typo.new
-        t.type = "Vowel Swap"
-        t.name = c
-        t.valid_name = TLD.valid_domain?(c)
-        @typos << t
+        add_typo("Vowel Swap", c)
     } 
 
     self.homophones.sort.uniq.each { |c|
-        t = Typo.new
-        t.type = "Homophones"
-        t.name = c
-        t.valid_name = TLD.valid_domain?(c)
-        @typos << t
+        add_typo("Homophones", c)
     } 
 
     self.bit_flipping.sort.uniq.each { |c|
-        t = Typo.new
-        t.type = "Bit Flipping"
-        t.name = c
-        t.valid_name = TLD.valid_domain?(c)
-        @typos << t
+        add_typo("Bit Flipping", c)
     } 
 
     self.homoglyphs.sort.uniq.each { |c|
-      t = Typo.new
-      t.type = "Homoglyphs"
-      t.name = c
-      t.valid_name = TLD.valid_domain?(c)
-      @typos << t
+      add_typo("Homoglyphs", c)
     }
 
     self.wrong_tld.sort.uniq.each { |c|
-      t = Typo.new
-      t.type = "Wrong TLD"
-      t.name = c
-      t.valid_name = TLD.valid_domain?(c)
-      @typos << t
+      add_typo("Wrong TLD", c)
     } 
 
     self.wrong_sld.sort.uniq.each { |c|
-      t = Typo.new
-      t.type = "Wrong SLD"
-      t.name = c
-      t.valid_name = TLD.valid_domain?(c)
-      @typos << t
+      add_typo("Wrong SLD", c)
     } 
 #=begin
     self.all_sld.sort.uniq.each { |c|
-      t = Typo.new
-      t.type = "All SLD"
-      t.name = c
-      t.valid_name = TLD.valid_domain?(c)
-      @typos << t
+      add_typo("All SLD", c)
     }
 
     self.domain_prefix.sort.uniq.each { |c|
-      t = Typo.new
-      t.type = "Domain Prefix"
-      t.name = c
-      t.valid_name = TLD.valid_domain?(c)
-      @typos << t
+      add_typo("Domain Prefix", c)
     }
     
     self.domain_suffix.sort.uniq.each { |c|
-      t = Typo.new
-      t.type = "Domain Suffix"
-      t.name = c
-      t.valid_name = TLD.valid_domain?(c)
-      @typos << t
+      add_typo("Domain Suffix", c)
     }
 #=end
   end
