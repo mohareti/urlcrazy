@@ -1,3 +1,18 @@
+New in Version 0.8.2 (28 July 2025)
+
+🛠 Refactor typo generation to eliminate duplicate original domains
+
+## Bug Fixes
+Refactor typo generation to eliminate duplicate original domains
+
+## Code Modernization
+- Add helper method to filter out typos that match original domain
+- Reduce code duplication by consolidating typo creation logic
+
+## Misc
+- Update feature count from 15 to 17 domain variant types
+
+
 New in Version 0.8.1 (25 July 2025)
 
 🛠 Ruby compatibility updates, code modernization, and new typo types.

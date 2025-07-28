@@ -1,4 +1,4 @@
-[![License](https://img.shields.io/badge/license-Restricted-blue.svg)](https://raw.githubusercontent.com/urbanadventurer/urlcrazy/master/README.md) ![Stable Release](https://img.shields.io/badge/stable_release-0.8.1-blue.svg) [![Repositories](https://repology.org/badge/tiny-repos/urlcrazy.svg)](https://repology.org/project/urlcrazy/versions)
+[![License](https://img.shields.io/badge/license-Restricted-blue.svg)](https://raw.githubusercontent.com/urbanadventurer/urlcrazy/master/README.md) ![Stable Release](https://img.shields.io/badge/stable_release-0.8.2-blue.svg) [![Repositories](https://repology.org/badge/tiny-repos/urlcrazy.svg)](https://repology.org/project/urlcrazy/versions)
 
 # 😜⌨ URLCrazy
 
