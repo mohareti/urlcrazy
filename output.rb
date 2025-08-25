@@ -1,9 +1,11 @@
-# output.rb — clean CSV (commas, one row per record), no banners/lines
+# output.rb — writes a real CSV file under /content/ and still prints to STDOUT.
 # Columns: Typo Type | Typo Domain | IP | Country | NameServer | MailServer
-# Rows: ONLY valid + resolved
+# Rows: ONLY valid + resolved (A/AAAA present)
+
 require 'csv'
 require 'json'
 require 'resolv'
+require 'fileutils'
 
 begin
   require 'colorize'
@@ -52,7 +54,7 @@ class Output
         return ensure_trailing_dot(recs.first&.name.to_s) if recs && !recs.empty?
       end
     rescue StandardError; end
-    "" # << blank instead of "."
+    ""
   end
 
   def effective_resolved_mx(typo)
@@ -69,7 +71,7 @@ class Output
         end
       end
     rescue StandardError; end
-    "" # << blank instead of "."
+    ""
   end
 
   def filtered_typos
@@ -80,6 +82,28 @@ class Output
     end
   end
 
+  # ---- file output helpers ----
+  def sanitize_filename(s)
+    s.to_s.gsub(/[^\w.\-]+/, "_")
+  end
+
+  def default_outfile_path
+    ts   = Time.now.utc.strftime("%Y%m%d-%H%M%S")
+    base = sanitize_filename(@domain.domain)
+    File.join("/content", "#{base}_typos_#{ts}.csv")
+  end
+
+  def outfile_path
+    (ENV["URLCRAZY_OUTFILE"] && ENV["URLCRAZY_OUTFILE"].strip != "" && ENV["URLCRAZY_OUTFILE"]) ||
+    (ENV["OUTFILE"]         && ENV["OUTFILE"].strip         != "" && ENV["OUTFILE"]) ||
+    default_outfile_path
+  end
+
+  def write_text_file(path, contents)
+    FileUtils.mkdir_p(File.dirname(path))
+    File.open(path, "w") { |f| f.write(contents) }
+  end
+
   # suppress headers in CSV/JSON modes
   def header; end
   def hostnames_to_process; "" end
@@ -87,10 +111,10 @@ class Output
   private
   def print_output(*args); args.each { |a| $stdout.print(a.to_s) }; end
   def puts_output(str=""); $stdout.puts(str.to_s); end
+  def warn_output(str=""); $stderr.puts(str.to_s); end
 end
 
-# ---------------- HUMAN TABLE (no dashed line requirement stated for human;
-# we keep a simple, clean table with exact columns) ----------------
+# ---------------- HUMAN TABLE (clean, no dashed lines) ----------------
 class OutputHuman < Output
   def table
     headings = ["Typo Type","Typo Domain","IP","Country","NameServer","MailServer"]
@@ -104,15 +128,12 @@ class OutputHuman < Output
       [t.type.to_s, t.name.to_s, ip, country, effective_resolved_ns(t), effective_resolved_mx(t)]
     end
 
-    # compute widths, print header
     widths = headings.each_with_index.map do |h,i|
       [h.length, rows.map { |r| r[i].to_s.length }.max || 0].max + 2
     end
     headings.each_with_index { |h,i| print_output h; print_output " " * (widths[i]-h.length) }
     puts_output
-    # NO dashed line
 
-    # rows
     rows.each do |r|
       r.each_with_index do |cell,i|
         s = cell.to_s
@@ -125,14 +146,14 @@ class OutputHuman < Output
   end
 end
 
-# ---------------- CSV (clean: commas, one record per line, no banners) ----------------
+# ---------------- CSV (writes to file under /content + prints to STDOUT) ----------------
 class OutputCSV < Output
   def table
     headings = ["Typo Type","Typo Domain","IP","Country","NameServer","MailServer"]
 
     csv = CSV.new("",
       col_sep: ",",
-      row_sep: "\n",      # ensure newline separators (avoid one giant row)
+      row_sep: "\n",
       force_quotes: true,
       write_headers: true,
       headers: headings
@@ -148,11 +169,19 @@ class OutputCSV < Output
       csv << [ t.type.to_s, t.name.to_s, ip, country, effective_resolved_ns(t), effective_resolved_mx(t) ]
     end
 
-    puts_output csv.string
+    data = csv.string
+
+    # 1) Write to a real file under /content
+    path = outfile_path
+    write_text_file(path, data)
+    warn_output "CSV written to: #{path}"
+
+    # 2) Still print CSV to STDOUT to preserve CLI behavior
+    puts_output data
   end
 end
 
-# ---------------- JSON (optional) ----------------
+# ---------------- JSON (optional, prints to STDOUT only) ----------------
 class OutputJSON < Output
   def table
     items = filtered_typos.map do |t|
