@@ -1,0 +1,25 @@
+Notes: 
+command : !/content/urlcrazy/urlcrazy google.com -f csv 
+updates: 
+- output.rb is modified to list the domains which are resolved too NS only and
+- storing these files on /content folder with domain and time (google.com_typos_20250825-185701.csv)
+- to force specific path; URLCRAZY_OUTFILE=/content/output.csv /content/urlcrazy/urlcrazy google.com -f csv 2>/content/urlcrazy.log
+- sample output 
+CSV written to: /content/google.com_typos_20250825-185701.csv
+"Typo Type","Typo Domain","IP","Country","NameServer","MailServer"
+"Original","google.com","108.177.125.139","UNITED STATES (US)","ns4.google.com.","smtp.google.com."
+"Character Omission","gogle.com","173.194.174.103","UNITED STATES (US)","ns1.google.com.","."
+"Character Omission","googe.com","162.243.10.151","UNITED STATES (US)","ns2.hsicell.com.",""
+"Character Omission","googl.com","108.177.125.105","UNITED STATES (US)","ns2.google.com.","."
+"Character Omission","goole.com","217.160.0.201","GERMANY (DE)","ns1083.ui-dns.com.","mx00.ionos.co.uk."
+"Character Omission","oogle.com","172.67.185.69","UNITED STATES (US)","gwen.ns.cloudflare.com.","mx2.zoho.com."
+"Character Repeat","ggoogle.com","142.251.8.147","UNITED STATES (US)","ns1.google.com.","."
+"Character Repeat","googlee.com","74.125.203.99","UNITED STATES (US)","ns4.google.com.","."
+"Character Repeat","googlle.com","172.67.217.138","UNITED STATES (US)","roxy.ns.cloudflare.com.",""
+"Character Repeat","gooogle.com","64.233.188.103","UNITED STATES (US)","ns3.google.com.","."
+"Character Swap","gogole.com","64.233.187.99","UNITED STATES (US)","ns3.google.com.","."
+"Character Swap","googel.com","142.251.170.106","UNITED STATES (US)","ns3.google.com.","."
+"Character Swap","goolge.com","64.233.189.147","UNITED STATES (US)","ns2.google.com.","."
+"Character Swap","ogogle.com","108.177.125.105","UNITED STATES (US)","ns2.google.com.","."
+
+
